@@ -1,0 +1,6 @@
+[book]
+authors = ["mopuppet"]
+language = "en"
+multilingual = false
+src = "src"
+title = "mopuppet-mdbook-website"
