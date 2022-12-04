@@ -60,7 +60,26 @@ if (w1 != w0){
     go to main+120 // if this branch is taken, challenge is not sovled
 }
 ```
-Not the most gracious pseudo code, so let me explain what the `mov` and `movk` instructions are achieving here.
+Not the most gracious pseudo code, so let me explain what the `mov` and `movk` instructions are achieving here. All ARM64 instructions have a standard instruction length of 32 bits. Several things need to be encoded in each instruction such as opcodes, and which registers to operate on. This leaves less space for immediate values. Because of this ARM64 will use more than one instruction or shift operations to transfer larger data than one instruction can hold.
 
-//talk about how its only 32 bit instrucitons
-// how 32 bits are moved into the register using lsl
+# The MOVK Instruction
+
+MOVK stands for [Move wide with keep](https://developer.arm.com/documentation/ddi0602/2022-09/Base-Instructions/MOVK--Move-wide-with-keep-?lang=en). **MOVK moves a 16-bit imediate value into a register at a given left shift without changing the other bits in the register.** Lets take the above as an example:
+
+```
+mov	    w0, #0x5962                
+```
+| | 32-16 | 15-0 |
+| :----:| :----: | :---: |
+| w0| 0000 0000 0000 0000 | 0x5962 |
+
+The mov instruction moves 0x5962 into w0 ands zeros all other bits in the register.
+
+```
+movk	w0, #0x496c, lsl #16               
+```
+| Bits| 32-16 | 15-0 |
+| :----:| :----: | :---: |
+| w0| 0x496c | 0x5962 |
+
+The movk moves 0x496c into w0 except shifts the value 16 bits left, to store the value in the upper bits of w0. And unlike mov, movk does not effect any of the other bits in the register.
