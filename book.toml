@@ -3,4 +3,9 @@ authors = ["mopuppet"]
 language = "en"
 multilingual = false
 src = "src"
-title = "mopuppet-mdbook-website"
+title = "Mopuppet"
+
+[output.html]
+default-theme = "dark"
+preferred-dark-theme = "ayu"
+

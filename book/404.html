@@ -1,9 +1,9 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js light">
+<html lang="en" class="sidebar-visible no-js dark">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - mopuppet-mdbook-website</title>
+        <title>Page not found - Mopuppet</title>
         <base href="/">
 
 
@@ -36,7 +36,7 @@
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "ayu" : "dark";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -62,7 +62,7 @@
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
             html.classList.remove('no-js')
-            html.classList.remove('light')
+            html.classList.remove('dark')
             html.classList.add(theme);
             html.classList.add('js');
         </script>
@@ -81,7 +81,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="phoenix/phoenixObj.html"><strong aria-hidden="true">1.</strong> Phoenix</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="phoenix/stackZero.html"><strong aria-hidden="true">1.1.</strong> Stack-Zero</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="phoenix/phoenixObj.html"><strong aria-hidden="true">1.</strong> Phoenix</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="phoenix/stackZero.html"><strong aria-hidden="true">1.1.</strong> Stack-Zero</a></li><li class="chapter-item expanded "><a href="phoenix/stackOne.html"><strong aria-hidden="true">1.2.</strong> Stack-One</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -110,7 +110,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">mopuppet-mdbook-website</h1>
+                    <h1 class="menu-title">Mopuppet</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -162,6 +162,22 @@
 
         </div>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
 

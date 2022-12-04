@@ -1,9 +1,9 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js light">
+<html lang="en" class="sidebar-visible no-js dark">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>mopuppet-mdbook-website</title>
+        <title>Mopuppet</title>
         <meta name="robots" content="noindex" />
 
 
@@ -36,7 +36,7 @@
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "ayu" : "dark";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -62,7 +62,7 @@
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
             html.classList.remove('no-js')
-            html.classList.remove('light')
+            html.classList.remove('dark')
             html.classList.add(theme);
             html.classList.add('js');
         </script>
@@ -81,7 +81,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="phoenix/phoenixObj.html"><strong aria-hidden="true">1.</strong> Phoenix</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="phoenix/stackZero.html"><strong aria-hidden="true">1.1.</strong> Stack-Zero</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="phoenix/phoenixObj.html"><strong aria-hidden="true">1.</strong> Phoenix</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="phoenix/stackZero.html"><strong aria-hidden="true">1.1.</strong> Stack-Zero</a></li><li class="chapter-item expanded "><a href="phoenix/stackOne.html"><strong aria-hidden="true">1.2.</strong> Stack-One</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -110,7 +110,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">mopuppet-mdbook-website</h1>
+                    <h1 class="menu-title">Mopuppet</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -143,9 +143,141 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="phoenix"><a class="header" href="#phoenix">Phoenix</a></h1>
-<p>This guide covers exploit education's phoenix machine. The purpose of this guide however is to provide the user with an understanding of ARM64 bit assembly language rather than solving the challenge in the most obvious way possible. </p>
-<p>THIS IS A WEBHOOK TEST</p>
+<p>This guide covers exploit education's phoenix machine. The purpose of this guide is to provide the user with an understanding of ARM64 bit assembly language rather than solving the challenges in the most obvious way possible. </p>
+<p>As the guide is currently, you should already have a <strong>very basic</strong> understanding of gdb and assembly whether that be x86, ARM32 etc. As time goes on I will seek to expand the guide to include information on basic assembly and gdb.</p>
+<p><strong>I am also learning ARM64 as this guide is written, I will make mistakes or assumptions which are wrong. Please reach out and inform me of any errors.</strong></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="stack-zero"><a class="header" href="#stack-zero">Stack-Zero</a></h1>
+<p>The first challenge of the Phoenix machine covers a simple buffer overflow vulnerability present in the <code>gets()</code> C library function. Below is the main function of stack-zero disassembled in gdb:</p>
+<pre><code class="language-objdump">0x00000000004006c4 &lt;+0&gt;:     stp     x29, x30, [sp, #-112]!
+0x00000000004006c8 &lt;+4&gt;:     mov     x29, sp
+0x00000000004006cc &lt;+8&gt;:     str     w0, [x29, #28]
+0x00000000004006d0 &lt;+12&gt;:    str     x1, [x29, #16]
+0x00000000004006d4 &lt;+16&gt;:    adrp    x0, 0x400000
+0x00000000004006d8 &lt;+20&gt;:    add     x0, x0, #0x760
+0x00000000004006dc &lt;+24&gt;:    bl      0x400540 &lt;puts@plt&gt;
+0x00000000004006e0 &lt;+28&gt;:    str     wzr, [x29, #104]
+0x00000000004006e4 &lt;+32&gt;:    add     x0, x29, #0x28
+0x00000000004006e8 &lt;+36&gt;:    bl      0x400530 &lt;gets@plt&gt;
+0x00000000004006ec &lt;+40&gt;:    ldr     w0, [x29, #104]
+0x00000000004006f0 &lt;+44&gt;:    cmp     w0, #0x0
+0x00000000004006f4 &lt;+48&gt;:    b.eq    0x400708 &lt;main+68&gt;  // b.none
+0x00000000004006f8 &lt;+52&gt;:    adrp    x0, 0x400000
+0x00000000004006fc &lt;+56&gt;:    add     x0, x0, #0x7b0
+0x0000000000400700 &lt;+60&gt;:    bl      0x400540 &lt;puts@plt&gt;
+0x0000000000400704 &lt;+64&gt;:    b       0x400714 &lt;main+80&gt;
+0x0000000000400708 &lt;+68&gt;:    adrp    x0, 0x400000
+0x000000000040070c &lt;+72&gt;:    add     x0, x0, #0x7e8
+0x0000000000400710 &lt;+76&gt;:    bl      0x400540 &lt;puts@plt&gt;
+0x0000000000400714 &lt;+80&gt;:    mov     w0 #0x0                        // #0
+0x0000000000400718 &lt;+84&gt;:    bl      0x400560 &lt;exit@plt&gt;
+</code></pre>
+<h1 id="the-stp-instruction"><a class="header" href="#the-stp-instruction">The stp Instruction</a></h1>
+<pre><code>stp     x29, x30, [sp, #-112]!
+</code></pre>
+<p>While not essential to solving this challenge, the <code>stp</code> instruction is an important one to understand. The instruciton stands for <em><a href="https://developer.arm.com/documentation/dui0801/g/A64-Data-Transfer-Instructions/STP">Store Pair of Registers</a></em>. <strong>The instruciton stores the values of two registers at a memory address calculated from a base register and a given offset.</strong></p>
+<p>In this case, <code>x29</code> and <code>x30</code> are the values to be stored. <code>sp</code> is the base register and <code>-112</code> is the offset.
+Here is the C pseudo code for the <code>stp</code> instruction above:</p>
+<pre><code class="language-c">sp -= 112
+*(sp) = x29
+*(sp + 8) = x30
+</code></pre>
+<p>You'll see that the <code>sp</code> register itself is modified by the <code>stp</code> instruction. In our case it is modified before storing the values, this is due to the <code>!</code> in the instruciton. <strong>The <code>!</code> signifies the instruction is <em>pre-index</em> otherwise it is <em>post-index.</em></strong> Here is an example of post-index:</p>
+<pre><code>stp     x5, x6, [sp, #-16]
+</code></pre>
+<pre><code class="language-c">*(sp-16) = x5
+*(sp-8) = x6
+sp -= 16
+</code></pre>
+<p>Taking a quick look through the assembly code, <code>x30</code> is never mentioned again after the <code>stp</code> instruction. This seems like a waste of 8 bytes, which it is. <strong><a href="https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language-ebook/dp/B0881Z2VJG">ARM hardware requires that <code>sp</code> is always 16-byte aligned. This means we can only add and subtract from <code>sp</code> with multiples of 16.</a></strong> This also means, if we stored only one value instead of two we would still waste 8 bytes.</p>
+<p>Let's return to the challenge. We can see <code>gets()</code> is called on <code>+36</code>. Looking at the man page for <code>gets()</code> we see it takes one char pointer as input. <strong>In 64-bit ARM assembly the first 8 parameters to a function will be passed by convention using registers <code>X0-X7</code>.</strong> We can assume <code>X0</code> will be passed to <code>gets()</code>.</p>
+<p>Indeed x0 is modifed in the instruction immediately before <code>gets()</code> is called:</p>
+<pre><code>add     x0, x29, #0x28
+</code></pre>
+<p>In Pseudo C: </p>
+<pre><code class="language-c">x0 = x29 + 40
+</code></pre>
+<p>We know from lines <code>+4</code> and <code>+0</code> that <code>x29</code> has stored the stack pointer from the beginning of <code>main()</code>:</p>
+<pre><code>stp     x29, x30, [sp, #-112]!
+mov     x29, sp
+</code></pre>
+<p>In Pseudo C:</p>
+<pre><code class="language-c">sp -= 112
+*(sp) = x29
+*(sp + 8) = x30
+x29 = sp
+</code></pre>
+<p>From the source code for this challenge we know the objective is to change the value of <code>locals.changeme</code>. Looking at the instructions after line <code>+36</code> we want to change the value of <code>x29+104</code>.</p>
+<pre><code>ldr     w0, [x29, #104]
+cmp     w0, #0x0
+b.eq    0x400708 &lt;main+68&gt;  // b.none
+</code></pre>
+<p>In Pseudo C:</p>
+<pre><code class="language-c">w0 = *(x29 + 104)
+if (w0 == 0){
+    go to main+68 // Taking this branch will successfully complete the challenge
+}
+</code></pre>
+<p>Considering <code>gets()</code> is called with <code>x29+40</code> and we want to change <code>x29+104</code>:</p>
+<p><code>104-40 = 64</code></p>
+<p>Therefore to change <code>x29+104</code> we need to enter 65 bytes of data to overflow the buffer and complete the challenge.
+65 characters will do the trick.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="stack-one"><a class="header" href="#stack-one">Stack-One</a></h1>
+<p>Stack-One is very similiar to Stack-Zero, only <code>strcopy()</code> is used instead of <code>gets()</code> and to exploit the buffer overflow vulnerability will need to change <code>locals.changme</code> to a specific value. Below is the main function of stack-one disassembled in gdb:</p>
+<pre><code>0x0000000000400794 &lt;+0&gt;:	stp	x29, x30, [sp, #-112]!
+0x0000000000400798 &lt;+4&gt;:	mov	x29, sp
+0x000000000040079c &lt;+8&gt;:	str	w0, [x29, #28]
+0x00000000004007a0 &lt;+12&gt;:	str	x1, [x29, #16]
+0x00000000004007a4 &lt;+16&gt;:	adrp	x0, 0x400000
+0x00000000004007a8 &lt;+20&gt;:	add	x0, x0, #0x868
+0x00000000004007ac &lt;+24&gt;:	bl	0x400600 &lt;puts@plt&gt;
+0x00000000004007b0 &lt;+28&gt;:	ldr	w0, [x29, #28]
+0x00000000004007b4 &lt;+32&gt;:	cmp	w0, #0x1
+0x00000000004007b8 &lt;+36&gt;:	b.gt	0x4007d0 &lt;main+60&gt;
+0x00000000004007bc &lt;+40&gt;:	adrp	x0, 0x400000
+0x00000000004007c0 &lt;+44&gt;:	add	x0, x0, #0x8b8
+0x00000000004007c4 &lt;+48&gt;:	mov	x1, x0
+0x00000000004007c8 &lt;+52&gt;:	mov	w0, #0x1                   	// #1
+0x00000000004007cc &lt;+56&gt;:	bl	0x400610 &lt;errx@plt&gt;
+0x00000000004007d0 &lt;+60&gt;:	str	wzr, [x29, #104]
+0x00000000004007d4 &lt;+64&gt;:	ldr	x0, [x29, #16]
+0x00000000004007d8 &lt;+68&gt;:	add	x0, x0, #0x8
+0x00000000004007dc &lt;+72&gt;:	ldr	x1, [x0]
+0x00000000004007e0 &lt;+76&gt;:	add	x0, x29, #0x28
+0x00000000004007e4 &lt;+80&gt;:	bl	0x4005e0 &lt;strcpy@plt&gt;
+0x00000000004007e8 &lt;+84&gt;:	ldr	w1, [x29, #104]
+0x00000000004007ec &lt;+88&gt;:	mov	w0, #0x5962                	// #22882
+0x00000000004007f0 &lt;+92&gt;:	movk	w0, #0x496c, lsl #16
+0x00000000004007f4 &lt;+96&gt;:	cmp	w1, w0
+0x00000000004007f8 &lt;+100&gt;:	b.ne	0x40080c &lt;main+120&gt;  // b.any
+0x00000000004007fc &lt;+104&gt;:	adrp	x0, 0x400000
+0x0000000000400800 &lt;+108&gt;:	add	x0, x0, #0x8f0
+0x0000000000400804 &lt;+112&gt;:	bl	0x400600 &lt;puts@plt&gt;
+0x0000000000400808 &lt;+116&gt;:	b	0x40081c &lt;main+136&gt;
+0x000000000040080c &lt;+120&gt;:	ldr	w1, [x29, #104]
+0x0000000000400810 &lt;+124&gt;:	adrp	x0, 0x400000
+0x0000000000400814 &lt;+128&gt;:	add	x0, x0, #0x938
+0x0000000000400818 &lt;+132&gt;:	bl	0x4005f0 &lt;printf@plt&gt;
+0x000000000040081c &lt;+136&gt;:	mov	w0, #0x0                   	// #0
+0x0000000000400820 &lt;+140&gt;:	bl	0x400630 &lt;exit@plt&gt;
+</code></pre>
+<p>From the source code and the assembly we can see the buffer is the same size as the previous challenge. Except this time, the important instructions after <code>strcpy()</code> at <code>+80</code> are:</p>
+<pre><code>ldr	w1, [x29, #104]
+mov	w0, #0x5962                	// #22882
+movk	w0, #0x496c, lsl #16
+cmp	w1, w0
+b.ne	0x40080c &lt;main+120&gt;  // b.any
+</code></pre>
+<p>In Pseudo C:</p>
+<pre><code class="language-c">w1 = *(x29 + 104)
+w0 = 0x5962 
+w0 = 0x496c // this only effects the higher 16 bits of the registers due to the lsl #16
+if (w1 != w0){
+    go to main+120 // if this branch is taken, challenge is not sovled
+}
+</code></pre>
+<p>Not the most gracious pseudo code, so let me explain what the <code>mov</code> and <code>movk</code> instructions are achieving here.</p>
+<p>//talk about how its only 32 bit instrucitons
+// how 32 bits are moved into the register using lsl</p>
 
                     </main>
 
@@ -164,6 +296,22 @@
 
         </div>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
 

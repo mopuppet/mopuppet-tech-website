@@ -1,9 +1,9 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js light">
+<html lang="en" class="sidebar-visible no-js dark">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Phoenix - mopuppet-mdbook-website</title>
+        <title>Phoenix - Mopuppet</title>
 
 
         <!-- Custom HTML head -->
@@ -35,7 +35,7 @@
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "ayu" : "dark";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -61,7 +61,7 @@
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
             html.classList.remove('no-js')
-            html.classList.remove('light')
+            html.classList.remove('dark')
             html.classList.add(theme);
             html.classList.add('js');
         </script>
@@ -80,7 +80,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../phoenix/phoenixObj.html" class="active"><strong aria-hidden="true">1.</strong> Phoenix</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../phoenix/stackZero.html"><strong aria-hidden="true">1.1.</strong> Stack-Zero</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../phoenix/phoenixObj.html" class="active"><strong aria-hidden="true">1.</strong> Phoenix</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../phoenix/stackZero.html"><strong aria-hidden="true">1.1.</strong> Stack-Zero</a></li><li class="chapter-item expanded "><a href="../phoenix/stackOne.html"><strong aria-hidden="true">1.2.</strong> Stack-One</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -109,7 +109,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">mopuppet-mdbook-website</h1>
+                    <h1 class="menu-title">Mopuppet</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -142,8 +142,9 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="phoenix"><a class="header" href="#phoenix">Phoenix</a></h1>
-<p>This guide covers exploit education's phoenix machine. The purpose of this guide however is to provide the user with an understanding of ARM64 bit assembly language rather than solving the challenge in the most obvious way possible. </p>
-<p>THIS IS A WEBHOOK TEST</p>
+<p>This guide covers exploit education's phoenix machine. The purpose of this guide is to provide the user with an understanding of ARM64 bit assembly language rather than solving the challenges in the most obvious way possible. </p>
+<p>As the guide is currently, you should already have a <strong>very basic</strong> understanding of gdb and assembly whether that be x86, ARM32 etc. As time goes on I will seek to expand the guide to include information on basic assembly and gdb.</p>
+<p><strong>I am also learning ARM64 as this guide is written, I will make mistakes or assumptions which are wrong. Please reach out and inform me of any errors.</strong></p>
 
                     </main>
 
@@ -168,6 +169,22 @@
 
         </div>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
 
