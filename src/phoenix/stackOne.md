@@ -64,8 +64,7 @@ Not the most gracious pseudo code, so let me explain what the `mov` and `movk` i
 
 # The MOVK Instruction
 
-MOVK stands for [Move wide with keep](https://developer.arm.com/documentation/ddi0602/2022-09/Base-Instructions/MOVK--Move-wide-with-keep-?lang=en). **MOVK moves a 16-bit imediate value into a register at a given left shift without changing the other bits in the register.** Lets take the above as an example:
-
+MOVK stands for [Move wide with keep](https://developer.arm.com/documentation/ddi0602/2022-09/Base-Instructions/MOVK--Move-wide-with-keep-?lang=en). **MOVK moves a 16-bit imediate value into a register at a given left shift without changing the other bits in the register.** The possible left shifts for `movk` are 0,16,32,48, with 32 and 48 only availiable for 64 bit values. Lets take the above as an example:
 ```
 mov	    w0, #0x5962                
 ```
@@ -73,13 +72,22 @@ mov	    w0, #0x5962
 | :----:| :----: | :---: |
 | w0| 0000 0000 0000 0000 | 0x5962 |
 
-The mov instruction moves 0x5962 into w0 ands zeros all other bits in the register.
+The `mov` instruction moves `0x5962` into `w0` and zeros all other bits in the register.
 
 ```
 movk	w0, #0x496c, lsl #16               
 ```
-| Bits| 32-16 | 15-0 |
+| | 32-16 | 15-0 |
 | :----:| :----: | :---: |
 | w0| 0x496c | 0x5962 |
 
-The movk moves 0x496c into w0 except shifts the value 16 bits left, to store the value in the upper bits of w0. And unlike mov, movk does not effect any of the other bits in the register.
+The `movk` instruction moves `0x496c` into `w0` except shifts the value 16 bits left, to store the value in the upper bits of `w0`. And unlike `mov`, `movk` does not effect any of the other bits in the register.
+
+`movk` can also be used with 64 bit values, for example:
+
+```
+mov	    r7, #0x5A61                	
+movk	r7, #0xD962, lsl #16
+movk	r7, #0xD7C1 lsl #32
+movk	r7, #0x7F69, lsl #48
+```
