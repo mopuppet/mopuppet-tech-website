@@ -90,3 +90,26 @@ movk	r7, #0xD962, lsl #16
 movk	r7, #0xD7C1 lsl #32
 movk	r7, #0x7F69, lsl #48
 ```
+
+Lets return to the challenge. We know that we need to make the value of memory address `x29 + 104`, `0x496c5962`. We also know from the previous challenge that we can change this value by overflowing the program's buffer which in this case is 64 characters. To create this specific however the order and value of our characters needs to be correct. Lets break the value down into bytes and their relevant ASCII values.
+
+```
+0x49    I
+0x6c    l
+0x59    Y
+0x62    b
+```
+
+# Little Endian
+
+Rather than the traditional left to right we humans write numbers down as, ARM64 computers store bytes in little-endian format with the least significant byte first. You can think of this as backwards. The reason for this is that if more data needs to be stored it can be stored to the right not the left of already stored data. This is important, as there may already be data stored previously to the left of the data we are seeking to expand. 
+
+| Left | Data | Right |
+| :----:| :----: | :---: |
+| 0x67f47e1f | 0x496c5962 | 0000 0000 |
+
+With this in mind, our character order should be `bYlI`, with the full solution as:
+
+```
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabYlI
+```
