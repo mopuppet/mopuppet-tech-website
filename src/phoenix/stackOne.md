@@ -54,13 +54,12 @@ b.ne	0x40080c <main+120>  // b.any
 In Pseudo C:
 ```c
 w1 = *(x29 + 104)
-w0 = 0x5962 
-w0 = 0x496c // this only effects the higher 16 bits of the registers due to the lsl #16
+w0 = 0x496c5962 
 if (w1 != w0){
     go to main+120 // if this branch is taken, challenge is not sovled
 }
 ```
-Not the most gracious pseudo code, so let me explain what the `mov` and `movk` instructions are achieving here. All ARM64 instructions have a standard instruction length of 32 bits. Several things need to be encoded in each instruction such as opcodes, and which registers to operate on. This leaves less space for immediate values. Because of this ARM64 will use more than one instruction or shift operations to transfer larger data than one instruction can hold.
+It's not obvious what the `mov` and `movk` instructions are doing so let me explain what they are achieving here. All ARM64 instructions have a standard instruction length of 32 bits. Several things need to be encoded in each instruction such as opcodes, and which registers to operate on. This leaves less space for immediate values. Because of this ARM64 will use more than one instruction or shift operations to transfer larger data than one instruction can hold.
 
 # The MOVK Instruction
 
