@@ -45,8 +45,8 @@ You'll see that the `sp` register itself is modified by the `stp` instruction. I
 stp     x5, x6, [sp, #-16]
 ```
 ```c
-*(sp-16) = x5
-*(sp-8) = x6
+*(sp) = x5
+*(sp+8) = x6
 sp -= 16
 ```
 Taking a quick look through the assembly code, `x30` is never mentioned again after the `stp` instruction. This seems like a waste of 8 bytes, which it is. **[ARM hardware requires that `sp` is always 16-byte aligned. This means we can only add and subtract from `sp` with multiples of 16.](https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language-ebook/dp/B0881Z2VJG)** This also means, if we stored only one value instead of two we would still waste 8 bytes.
